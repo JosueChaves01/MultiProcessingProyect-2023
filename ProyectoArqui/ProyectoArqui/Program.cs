@@ -12,6 +12,7 @@ using System.Xml.Linq;
 using System.ComponentModel;
 using System.Reflection.Metadata.Ecma335;
 using System.Collections;
+using System.Runtime.InteropServices;
 
 static List<string> ConvertirArchivoALista(string ubicacionArchivo)
 {
@@ -169,7 +170,26 @@ static Dictionary<string, string> CrearListaDatos(List<string> miLista)
         string linea = archivo.ReadLine();
         string[] campos = linea.Split(',');
         string primerElemento = campos[2];
-        string segundoElemento = campos[0].Substring(0,4);
+        string segundoElemento = campos[0].Substring(0,6);
+
+        if (!miDiccionario.ContainsKey(primerElemento))
+        {
+            miDiccionario.Add(primerElemento, segundoElemento);
+        }
+    }
+    return miDiccionario;
+}
+static Dictionary<string, string> CrearListaDistritos(List<string> miLista)
+{
+    StreamReader archivo = new StreamReader("C:/Users/josuc/Desktop/padron_completo/Distelec.txt");
+    Dictionary<string, string> miDiccionario = new Dictionary<string, string>();
+
+    while (!archivo.EndOfStream)
+    {
+        string linea = archivo.ReadLine();
+        string[] campos = linea.Split(',');
+        string primerElemento = campos[3];
+        string segundoElemento = campos[0].Substring(0, 6);
 
         if (!miDiccionario.ContainsKey(primerElemento))
         {
@@ -196,7 +216,7 @@ static void CantidadDeVotantesPorCanton(List<string> miLista, Dictionary<string,
     int degreeOfParallelism = Environment.ProcessorCount;
     object sync = new object();
     int cont = 0;
-    canton = miDiccionario[canton];
+    canton = miDiccionario[canton].Substring(0,3);
     Console.WriteLine(canton);
     Parallel.For(0, degreeOfParallelism, workerId =>
     {
@@ -204,7 +224,7 @@ static void CantidadDeVotantesPorCanton(List<string> miLista, Dictionary<string,
         var max = lim * (workerId + 1) / degreeOfParallelism;
         for (int i = (int)lim * workerId / degreeOfParallelism; i < max; i++)
 
-            if (miLista[i].Substring(10, 4).Equals(canton))
+            if (miLista[i].Substring(10, 3).Equals(canton))
             {
                 lock (sync)
                 {
@@ -308,10 +328,63 @@ static void buscarPersona(List<string> miLista, List<string[]> personas)
     Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
 }
 
+static void CantidadDeVotantesPorDistrito(List<string> miLista, Dictionary<string, string> miDiccionario)
+{
+    Console.WriteLine("Ingrese el nombre del distrito:");
+    string distrito = Console.ReadLine().ToUpper();
+
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+    int degreeOfParallelism = Environment.ProcessorCount;
+    object sync = new object();
+    int cont = 0;
+    for(int i = 0; i < 52; i++ ){
+        if (distrito.Length < 53)
+        {
+            distrito = distrito + " ";
+           
+        }
+        
+
+    try
+    {
+        distrito = miDiccionario[distrito];
+    }
+    catch (Exception ex)
+    {
+            
+            Console.WriteLine("El distrito ingresado no existe!");
+            return;
+    }
+
+
+
+        Parallel.For(0, degreeOfParallelism, workerId =>
+    {
+        int lim = miLista.Count();
+        var max = lim * (workerId + 1) / degreeOfParallelism;
+        for (int i = (int)lim * workerId / degreeOfParallelism; i < max; i++)
+
+            if (miLista[i].Substring(10, 6).Equals(distrito))
+            {
+                lock (sync)
+                {
+                    cont++;
+                }
+            }
+    });
+
+    Console.WriteLine("Hay " + cont + " votantes en el distrito descrito.");
+    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+
+}
+
+
 List<string> listaPersonas = ConvertirArchivoALista("C:/Users/josuc/Desktop/padron_completo/PADRON_COMPLETO.txt");
 List<string> listaDatos = ConvertirArchivoALista("C:/Users/josuc/Desktop/padron_completo/Distelec.txt");
 List<string[]> listaDatosOrdenados = organizarPersonas(listaPersonas);
 //ImprimirLista(CantidadDeVotantesPorProvinciaLista(miLista));
 //CantidadDeVotantesPorProvincia(listaPersonas);
 //CantidadDeVotantesPorCanton(listaPersonas, CrearListaDatos(listaDatos));
-buscarPersona(listaPersonas,listaDatosOrdenados);
+CantidadDeVotantesPorDistrito(listaPersonas, CrearListaDistritos(listaDatos));
+//buscarPersona(listaPersonas,listaDatosOrdenados);
