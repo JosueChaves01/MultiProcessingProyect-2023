@@ -379,6 +379,46 @@ static void CantidadDeVotantesPorDistrito(List<string> miLista, Dictionary<strin
 
 }
 
+    //=============================CANTIDAD DE PERSONAS POR IDENTIFICACION======================
+    static void PersonasPorIdentificacion(List<string[]> personas)
+    {
+        Dictionary<string, int> personasPorIdentificacion = new Dictionary<string, int>()
+    {
+        { "CEDULA", 0 },
+        { "CODIGO ELECTORAL", 0 },
+        { "FECHA DE VENCIMIENTO", 0 }
+    };
+
+        Stopwatch temporizador;
+        temporizador = Stopwatch.StartNew();
+        int degreeOfParallelism = Environment.ProcessorCount;
+
+        Parallel.For(0, degreeOfParallelism, workerId =>
+        {
+            int lim = personas.Count();
+            var max = lim * (workerId + 1) / degreeOfParallelism;
+            for (int i = (int)lim * workerId / degreeOfParallelism; i < max; i++)
+            {
+                string tipoIdentificacion = personas[i][2].ToUpper();
+
+                lock (personasPorIdentificacion)
+                {
+                    if (personasPorIdentificacion.ContainsKey(tipoIdentificacion))
+                    {
+                        personasPorIdentificacion[tipoIdentificacion]++;
+                    }
+                }
+            }
+        });
+
+        foreach (KeyValuePair<string, int> kvp in personasPorIdentificacion)
+        {
+            Console.WriteLine("Tipo de identificación: " + kvp.Key + " | Cantidad de personas: " + kvp.Value);
+        }
+
+        Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+    };
+
 
 List<string> listaPersonas = ConvertirArchivoALista("C:/Users/josuc/Desktop/padron_completo/PADRON_COMPLETO.txt");
 List<string> listaDatos = ConvertirArchivoALista("C:/Users/josuc/Desktop/padron_completo/Distelec.txt");
