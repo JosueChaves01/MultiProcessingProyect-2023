@@ -338,14 +338,15 @@ static void CantidadDeVotantesPorDistrito(List<string> miLista, Dictionary<strin
     int degreeOfParallelism = Environment.ProcessorCount;
     object sync = new object();
     int cont = 0;
-    for(int i = 0; i < 52; i++ ){
+    for (int i = 0; i < 52; i++)
+    {
         if (distrito.Length < 53)
         {
             distrito = distrito + " ";
-           
-        }
-        
 
+        }
+
+    }
     try
     {
         distrito = miDiccionario[distrito];
@@ -359,7 +360,7 @@ static void CantidadDeVotantesPorDistrito(List<string> miLista, Dictionary<strin
 
 
 
-        Parallel.For(0, degreeOfParallelism, workerId =>
+    Parallel.For(0, degreeOfParallelism, workerId =>
     {
         int lim = miLista.Count();
         var max = lim * (workerId + 1) / degreeOfParallelism;
