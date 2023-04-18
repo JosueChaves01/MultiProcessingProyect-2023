@@ -23,11 +23,16 @@ static List<string> ConvertirArchivoALista(string ubicacionArchivo)
         using (StreamReader lector = new StreamReader(ubicacionArchivo))
         {
             string linea;
+            int cont = Environment.ProcessorCount;
+            
             
             while ((linea = lector.ReadLine()) != null)
             {
                 lineasArchivo.Add(linea);
             }
+
+            
+
         }
     }
     catch (Exception ex)
@@ -360,6 +365,7 @@ static void CantidadDeVotantesPorDistrito(List<string> miLista, Dictionary<strin
 
 
 
+    int cont2 = 0; 
     Parallel.For(0, degreeOfParallelism, workerId =>
     {
         int lim = miLista.Count();
@@ -373,9 +379,17 @@ static void CantidadDeVotantesPorDistrito(List<string> miLista, Dictionary<strin
                     cont++;
                 }
             }
+            else
+            {
+                lock(sync)
+                { 
+                    cont2++;
+                }
+            }
     });
 
     Console.WriteLine("Hay " + cont + " votantes en el distrito descrito.");
+    Console.WriteLine((cont + cont2)-miLista.Count());
     Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
 
 }
