@@ -516,6 +516,90 @@ static void NDistritosConMasVotantesRegristrados(List<string> listaP, Dictionary
 
 }
 
+//==================PERSONAS CON CEDULA EXPIRADA
+
+
+//=======================CANTIDAD DE PERSONAS CON UN NOMBRE EN PARTICULAR
+static void PersonasConUnMismoNombre(List<string> listaP)
+{
+    Console.WriteLine("Ingrese el nombre a buscar: ");
+    String name = null;
+    name = Console.ReadLine();
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+
+    List<Dictionary<string, int>> listaCantidadPersonasPorCanton = new List<Dictionary<string, int>>();
+    int degreeOfParallelism = Environment.ProcessorCount;
+
+    Parallel.ForEach(miDiccionario, new ParallelOptions { MaxDegreeOfParallelism = degreeOfParallelism }, (dato) =>
+    {
+        int cont = 0;
+        foreach(string line in listaP)
+        {
+
+        }
+        //codigo para buscar persona
+    });
+
+    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+}
+
+//======================MENU PRINCIPAL
+static void Main(string[] args)
+{
+    Console.WriteLine("==========Menu de Consultas==========" +
+    "\n1.  Buscar persona a partir de cualquier dato" + //Consulta a
+    "\n2.  Mostrar cantidad de votantes por provincia" + //Consulta b
+    "\n3.  Mostrar cantidad de votantes por canton" + //Consulta c
+    "\n4.  Mostrar cantidad de votantes por distrito" + //Consulta d
+    "\n5.  Mostrar los N cantones con mas votantes registrados" + //Consulta e
+    "\n6.  Mostrar los N distritos con mas votantes registrados" + //Consulta f
+    "\n7.  Mostrar cantidad de personas por tipo de identificacion" + //Consulta g
+    "\n8.  Mostrar personas con cedula expirada en fecha dada" + //Consulta h
+    "\n9.  Mostrar cantidad de personas con un nombre en particular" + //Consulta i
+    "\n10. Mostrar cantidad de personas con un apellido en particular" + //Consulta j
+    "\n11. Mostrar los N nombres mas comunes" + //Consulta k
+    "\n12  Mostrar los N apellidos mas comunes" + //Consulta l
+    "\n13. Mostrar los N nombres menos comunes" + //Consulta m
+    "\n14. Ejecutar las consultas 2, 3, 4, 5, 6, 7, 8, 11, 12 y 13" + //Consulta n
+    "\nElige que consulta deseas revisar: ");
+
+    int op = Convert.ToInt16(Console.ReadLine());
+
+    switch(op) {
+        case 1:
+            break;
+        case 2:
+            break;
+        case 3:
+            break;
+        case 4:
+            break;
+        case 5:
+            break;
+        case 6:
+            break;
+        case 7:
+            break;
+        case 8:
+            break;
+        case 9:
+            break;
+        case 10:
+            break;
+        case 11:
+            break;
+        case 12:
+            break;
+        case 13:
+            break;
+        case 14:
+            break;
+        default: Console.WriteLine("--------------------OPCION INVALIDA--------------------");
+            break;
+    }
+}
+
 List<string> listaPersonas = ConvertirArchivoALista("C:/Users/josuc/Desktop/padron_completo/PADRON_COMPLETO.txt");
 List<string> listaDatos = ConvertirArchivoALista("C:/Users/josuc/Desktop/padron_completo/Distelec.txt");
 List<string[]> listaDatosOrdenados = organizarPersonas(listaPersonas);

@@ -43,3 +43,18 @@ C:\Users\josuc\Desktop\MultiProcessingProyect-2023\ProyectoArqui\ProyectoArqui\o
 C:\Users\josuc\Desktop\MultiProcessingProyect-2023\ProyectoArqui\ProyectoArqui\obj\Debug\net7.0\ProyectoArqui.pdb
 C:\Users\josuc\Desktop\MultiProcessingProyect-2023\ProyectoArqui\ProyectoArqui\obj\Debug\net7.0\ProyectoArqui.genruntimeconfig.cache
 C:\Users\josuc\Desktop\MultiProcessingProyect-2023\ProyectoArqui\ProyectoArqui\obj\Debug\net7.0\ref\ProyectoArqui.dll
+C:\Users\PERSONAL\OneDrive\Documentos\Cursos 2023\l semestre 2023\Arquitectura de computadores\Proyecto multicore\MultiProcessingProyect-2023\ProyectoArqui\ProyectoArqui\obj\Debug\net7.0\ProyectoArqui.csproj.AssemblyReference.cache
+C:\Users\PERSONAL\OneDrive\Documentos\Cursos 2023\l semestre 2023\Arquitectura de computadores\Proyecto multicore\MultiProcessingProyect-2023\ProyectoArqui\ProyectoArqui\obj\Debug\net7.0\ProyectoArqui.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\PERSONAL\OneDrive\Documentos\Cursos 2023\l semestre 2023\Arquitectura de computadores\Proyecto multicore\MultiProcessingProyect-2023\ProyectoArqui\ProyectoArqui\obj\Debug\net7.0\ProyectoArqui.AssemblyInfoInputs.cache
+C:\Users\PERSONAL\OneDrive\Documentos\Cursos 2023\l semestre 2023\Arquitectura de computadores\Proyecto multicore\MultiProcessingProyect-2023\ProyectoArqui\ProyectoArqui\obj\Debug\net7.0\ProyectoArqui.AssemblyInfo.cs
+C:\Users\PERSONAL\OneDrive\Documentos\Cursos 2023\l semestre 2023\Arquitectura de computadores\Proyecto multicore\MultiProcessingProyect-2023\ProyectoArqui\ProyectoArqui\obj\Debug\net7.0\ProyectoArqui.csproj.CoreCompileInputs.cache
+C:\Users\PERSONAL\OneDrive\Documentos\Cursos 2023\l semestre 2023\Arquitectura de computadores\Proyecto multicore\MultiProcessingProyect-2023\ProyectoArqui\ProyectoArqui\obj\Debug\net7.0\ProyectoArqui.dll
+C:\Users\PERSONAL\OneDrive\Documentos\Cursos 2023\l semestre 2023\Arquitectura de computadores\Proyecto multicore\MultiProcessingProyect-2023\ProyectoArqui\ProyectoArqui\obj\Debug\net7.0\refint\ProyectoArqui.dll
+C:\Users\PERSONAL\OneDrive\Documentos\Cursos 2023\l semestre 2023\Arquitectura de computadores\Proyecto multicore\MultiProcessingProyect-2023\ProyectoArqui\ProyectoArqui\obj\Debug\net7.0\ProyectoArqui.pdb
+C:\Users\PERSONAL\OneDrive\Documentos\Cursos 2023\l semestre 2023\Arquitectura de computadores\Proyecto multicore\MultiProcessingProyect-2023\ProyectoArqui\ProyectoArqui\bin\Debug\net7.0\ProyectoArqui.exe
+C:\Users\PERSONAL\OneDrive\Documentos\Cursos 2023\l semestre 2023\Arquitectura de computadores\Proyecto multicore\MultiProcessingProyect-2023\ProyectoArqui\ProyectoArqui\bin\Debug\net7.0\ProyectoArqui.deps.json
+C:\Users\PERSONAL\OneDrive\Documentos\Cursos 2023\l semestre 2023\Arquitectura de computadores\Proyecto multicore\MultiProcessingProyect-2023\ProyectoArqui\ProyectoArqui\bin\Debug\net7.0\ProyectoArqui.runtimeconfig.json
+C:\Users\PERSONAL\OneDrive\Documentos\Cursos 2023\l semestre 2023\Arquitectura de computadores\Proyecto multicore\MultiProcessingProyect-2023\ProyectoArqui\ProyectoArqui\bin\Debug\net7.0\ProyectoArqui.dll
+C:\Users\PERSONAL\OneDrive\Documentos\Cursos 2023\l semestre 2023\Arquitectura de computadores\Proyecto multicore\MultiProcessingProyect-2023\ProyectoArqui\ProyectoArqui\bin\Debug\net7.0\ProyectoArqui.pdb
+C:\Users\PERSONAL\OneDrive\Documentos\Cursos 2023\l semestre 2023\Arquitectura de computadores\Proyecto multicore\MultiProcessingProyect-2023\ProyectoArqui\ProyectoArqui\obj\Debug\net7.0\ProyectoArqui.genruntimeconfig.cache
+C:\Users\PERSONAL\OneDrive\Documentos\Cursos 2023\l semestre 2023\Arquitectura de computadores\Proyecto multicore\MultiProcessingProyect-2023\ProyectoArqui\ProyectoArqui\obj\Debug\net7.0\ref\ProyectoArqui.dll
