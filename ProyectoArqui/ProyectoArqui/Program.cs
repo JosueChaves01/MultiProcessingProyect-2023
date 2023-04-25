@@ -16,6 +16,24 @@ using System.Runtime.InteropServices;
 using System.Xml;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
+static List<string> LeerArchivo(string ubicacionArchivo)
+{
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+    List<string> lineasArchivo = new List<string>();
+
+    string[] lineas = File.ReadAllLines(ubicacionArchivo);
+
+    Parallel.Invoke(() =>
+    {
+        foreach (string linea in lineas)
+        {
+            lineasArchivo.Add(linea);
+        }
+    });
+    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+    return lineasArchivo;
+}
 static List<string> ConvertirArchivoALista(string ubicacionArchivo)
 {
     
@@ -72,29 +90,80 @@ static List<string> CantidadDeVotantesPorProvinciaLista(List<string> miLista)
 
 static void CantidadDeVotantesPorProvincia(List<string> miLista)
 {
-    Console.WriteLine(" 1 -San Jose\n 2 -Alajuela\n 3 -Cartago\n 4 -Heredia\n 5 -Guanacaste\n 6 -Puntarenas\n 7 -Limon\n 8 -Cosulado");
-    Console.WriteLine("ingrese el indice de la provincia para el que desea saber la cantidad de votantes:");
-    string canton = Console.ReadLine();
+    
     Stopwatch temporizador;
     temporizador = Stopwatch.StartNew();
-    int cont = 0;
     int degreeOfParallelism = Environment.ProcessorCount;
     object sync = new object();
-    Parallel.For(0, degreeOfParallelism, workerId =>
+    List<Dictionary<string, int>> listaCantidadPersonasPorProvncia = new List<Dictionary<string, int>>();
+    string provincia = "SAN JOSE";
+    Parallel.For(0, 9, workerId =>
     {
-        int lim = miLista.Count();
-        var max = lim * (workerId + 1) / degreeOfParallelism;
-        for (int i = (int)lim * workerId / degreeOfParallelism; i < max; i++)
+        lock (sync)
+        { 
+            string indiceProv = (workerId).ToString();
 
-            if (miLista[i].Substring(10, 1).Equals(canton))
+            if (workerId == 0)
             {
-                lock (sync)
+                provincia = "Pasaporte";
+                indiceProv = "9";
+            }
+            else if (workerId == 1)
+            {
+                provincia = "SAN JOSE";
+            }
+            else if (workerId == 2)
+            {
+                provincia = "ALAJUELA";
+            }
+            else if (workerId == 3)
+            {
+                provincia = "HEREDIA";
+            }
+            else if (workerId == 4)
+            {
+                provincia = "CARTAGO";
+            }
+            else if (workerId == 5)
+            {
+                provincia = "GUANACASTE";
+            }
+            else if (workerId == 6)
+            {
+                provincia = "PUNTARENAS";
+            }
+            else if (workerId == 7)
+            {
+                provincia = "LIMON";
+            }
+            else if (workerId == 8)
+            {
+                provincia = "Consulado";
+            }
+
+        
+            int cont = 0;
+            foreach (string linea in miLista)
+            {
+                if (linea.Substring(0, 1).Equals(indiceProv))
                 {
-                    cont++;
+                    cont++; ;
                 }
             }
+
+            listaCantidadPersonasPorProvncia.Sort((x, y) => y.Keys.First().CompareTo(x.Keys.First()));
+
+            Dictionary<string, int> listaFinal = new Dictionary<string, int>();
+            listaFinal.Add(workerId.ToString()+" "+provincia, cont);
+            listaCantidadPersonasPorProvncia.Add(listaFinal);
+        }
     });
-    Console.WriteLine("Hay " + cont + " votantes en la provincia.");
+
+    foreach(Dictionary<string,int> prov in listaCantidadPersonasPorProvncia)
+    {
+        Console.WriteLine("Hay " + prov.Values.First() + " votantes en la provincia " + prov.Keys.First());
+    }
+    
     Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
 
 
@@ -106,6 +175,7 @@ static void ConsultarPersonasPorCanton(List<string> miLista, string canton)
     temporizador = Stopwatch.StartNew();
     object sync = new object();
     int cont = 0;
+    List<Dictionary<string, int>> listaCantidadPersonasPorProvincia = new List<Dictionary<string, int>>();
     Parallel.ForEach(miLista, elemento =>
     {
         if (elemento.Substring(10, 4).Equals(canton))
@@ -167,7 +237,7 @@ static void ConsultarPersonasPorCantonForLimitado(List<string> miLista, string c
 
 static Dictionary<string, string> CrearListaCatones(List<string> miLista)
 {
-    StreamReader archivo = new StreamReader("C:/Users/josuc/Desktop/padron_completo/Distelec.txt");
+    StreamReader archivo = new StreamReader("C:\\Users\\josuc\\Documents\\U\\Arquitectura de Computadores\\padron_completo\\Distelec.txt");
     Dictionary<string, string> miDiccionario = new Dictionary<string, string>();
     
     while (!archivo.EndOfStream)
@@ -186,7 +256,7 @@ static Dictionary<string, string> CrearListaCatones(List<string> miLista)
 }
 static Dictionary<string, string> CrearListaDistritos(List<string> miLista)
 {
-    StreamReader archivo = new StreamReader("C:/Users/josuc/Desktop/padron_completo/Distelec.txt");
+    StreamReader archivo = new StreamReader("C:\\Users\\josuc\\Documents\\U\\Arquitectura de Computadores\\padron_completo\\Distelec.txt");
     Dictionary<string, string> miDiccionario = new Dictionary<string, string>();
 
     while (!archivo.EndOfStream)
@@ -212,34 +282,44 @@ static void imprimirDiccionario(Dictionary<string, string> miDiccionario)
     }
 }
 
-static void CantidadDeVotantesPorCanton(List<string> miLista, Dictionary<string, string> miDiccionario)
+static List<Dictionary<string, int>> CantidadDeVotantesPorCanton(List<string> miLista, Dictionary<string, string> miDiccionario)
 {
-    Console.WriteLine("Ingrese el nombre del canton:");
-    string canton = Console.ReadLine().ToUpper();
-
     Stopwatch temporizador;
     temporizador = Stopwatch.StartNew();
+
+    List<Dictionary<string, int>> listaCantidadPersonasPorCanton = new List<Dictionary<string, int>>();
     int degreeOfParallelism = Environment.ProcessorCount;
-    object sync = new object();
-    int cont = 0;
-    canton = miDiccionario[canton].Substring(0,3);
-    Parallel.For(0, degreeOfParallelism, workerId =>
+
+
+    Parallel.ForEach(miDiccionario, new ParallelOptions { MaxDegreeOfParallelism = degreeOfParallelism }, (dato) =>
     {
-        int lim = miLista.Count();
-        var max = lim * (workerId + 1) / degreeOfParallelism;
-        for (int i = (int)lim * workerId / degreeOfParallelism; i < max; i++)
+        int cont = 0;
+        foreach (string linea in miLista)
+        {
 
-            if (miLista[i].Substring(10, 3).Equals(canton))
+            string indiceDistrito = dato.Value;
+
+            if (indiceDistrito.Substring(0, 6).Equals(linea.Substring(10, 6)))
             {
-                lock (sync)
-                {
-                    cont++;
-                }
+                cont++;
             }
-    });
-    Console.WriteLine("Hay " + cont + " votantes en el canton descrito. (For limitado)");
-    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
 
+        }
+
+        Dictionary<string, int> listaFinal = new Dictionary<string, int>();
+        listaFinal.Add(dato.Key, cont);
+        listaCantidadPersonasPorCanton.Add(listaFinal);
+    });
+
+    
+    foreach(Dictionary<string,int> canton in listaCantidadPersonasPorCanton)
+    {
+        Console.WriteLine("El canton " + canton.Keys.First() + " tiene " + canton.Values.First() + " votantes");
+    }
+    
+
+    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+    return listaCantidadPersonasPorCanton;
 }
 static List<string[]> organizarPersonas(List<string> miLista)
 {
@@ -331,65 +411,44 @@ static void buscarPersona(List<string> miLista, List<string[]> personas)
     Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
 }
 
-static void CantidadDeVotantesPorDistrito(List<string> miLista, Dictionary<string, string> miDiccionario)
+static List<Dictionary<string, int>> CantidadDeVotantesPorDistrito(List<string> miLista, Dictionary<string, string> miDiccionario)
 {
-    Console.WriteLine("Ingrese el nombre del distrito:");
-    string distrito = Console.ReadLine().ToUpper();
-
+    
     Stopwatch temporizador;
     temporizador = Stopwatch.StartNew();
+
+    List<Dictionary<string, int>> listaCantidadPersonasPorCanton = new List<Dictionary<string, int>>();
     int degreeOfParallelism = Environment.ProcessorCount;
-    object sync = new object();
-    int cont = 0;
-    for (int i = 0; i < 52; i++)
+
+
+    Parallel.ForEach(miDiccionario, new ParallelOptions { MaxDegreeOfParallelism = degreeOfParallelism }, (dato) =>
     {
-        if (distrito.Length < 53)
+        int cont = 0;
+        foreach (string linea in miLista)
         {
-            distrito = distrito + " ";
+
+            string indiceDistrito = dato.Value;
+
+            if (indiceDistrito.Substring(0, 6).Equals(linea.Substring(10, 6)))
+            {
+                cont++;
+            }
 
         }
 
-    }
-    try
-    {
-        distrito = miDiccionario[distrito];
-    }
-    catch (Exception ex)
-    {
-            
-            Console.WriteLine("El distrito ingresado no existe!");
-            return;
-    }
-
-
-
-    int cont2 = 0; 
-    Parallel.For(0, degreeOfParallelism, workerId =>
-    {
-        int lim = miLista.Count();
-        var max = lim * (workerId + 1) / degreeOfParallelism;
-        for (int i = (int)lim * workerId / degreeOfParallelism; i < max; i++)
-
-            if (miLista[i].Substring(10, 6).Equals(distrito))
-            {
-                lock (sync)
-                {
-                    cont++;
-                }
-            }
-            else
-            {
-                lock(sync)
-                { 
-                    cont2++;
-                }
-            }
+        Dictionary<string, int> listaFinal = new Dictionary<string, int>();
+        listaFinal.Add(dato.Key, cont);
+        listaCantidadPersonasPorCanton.Add(listaFinal);
     });
 
-    Console.WriteLine("Hay " + cont + " votantes en el distrito descrito.");
-    Console.WriteLine((cont + cont2)-miLista.Count());
-    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+    
+    foreach (Dictionary<string, int> canton in listaCantidadPersonasPorCanton)
+    {
+        Console.WriteLine("El distrito " + canton.Keys.First() + " tiene " + canton.Values.First() + " votantes");
+    }
 
+    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+    return listaCantidadPersonasPorCanton;
 }
 
 //=============================CANTIDAD DE PERSONAS POR IDENTIFICACION======================
@@ -433,10 +492,18 @@ static void PersonasPorIdentificacion(List<string[]> personas)
     Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
 };
 
-static void NCantonesConMasVotantesRegristrados(List<string> listaP, Dictionary<string,string> miDiccionario)
+static void NCantonesConMasVotantesRegristrados(List<string> listaP, Dictionary<string,string> miDiccionario, int n)
 {
-    Console.WriteLine("Ingrese la cantidad de datos que desea ver: ");
-    int c = int.Parse(Console.ReadLine());
+    int c;
+    if(n == 0)
+    {
+        Console.WriteLine("Ingrese la cantidad de datos que desea ver: ");
+        c = int.Parse(Console.ReadLine());
+    }
+    else
+    {
+        c = n;
+    }
     Stopwatch temporizador;
     temporizador = Stopwatch.StartNew();
 
@@ -474,55 +541,112 @@ static void NCantonesConMasVotantesRegristrados(List<string> listaP, Dictionary<
     Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
 
 }
-static void NDistritosConMasVotantesRegristrados(List<string> listaP, Dictionary<string,string> miDiccionario)
+static void NDistritosConMasVotantesRegristrados(List<string> listaP, Dictionary<string,string> miDiccionario, int n)
 {
-    Console.WriteLine("Ingrese la cantidad de datos que desea ver: ");
-    int c = int.Parse(Console.ReadLine());
+    int c;
+    if (n == 0)
+    {
+        Console.WriteLine("Ingrese la cantidad de datos que desea ver: ");
+        c = int.Parse(Console.ReadLine());
+    }
+    else
+    { 
+    c = n;
+    }
     Stopwatch temporizador;
     temporizador = Stopwatch.StartNew();
 
-    List<Dictionary<string, int>> listaCantidadPersonasPorCanton = new List<Dictionary<string,int>>();
+    List<Dictionary<string, int>> listaCantidadPersonasPorDistrito = new List<Dictionary<string, int>>();
     int degreeOfParallelism = Environment.ProcessorCount;
-    
+
+
     Parallel.ForEach(miDiccionario, new ParallelOptions { MaxDegreeOfParallelism = degreeOfParallelism }, (dato) =>
     {
         int cont = 0;
-        foreach(string linea in listaP)
+        foreach (string linea in listaP)
         {
-            
-            string indiceDistrito = dato.Value;
-            
-            if (indiceDistrito.Substring(0,6).Equals(linea.Substring(10, 6)))
-            {
-                cont ++;
-            }
-            
-        }
-        
-        Dictionary <string , int> listaFinal = new Dictionary<string , int>();
-        listaFinal.Add(dato.Key,cont);
-        listaCantidadPersonasPorCanton.Add(listaFinal);
 
-        
+            string indiceDistrito = dato.Value;
+
+            if (indiceDistrito.Substring(0, 6).Equals(linea.Substring(10, 6)))
+            {
+                cont++;
+            }
+
+        }
+
+        Dictionary<string, int> listaFinal = new Dictionary<string, int>();
+        listaFinal.Add(dato.Key, cont);
+        listaCantidadPersonasPorDistrito.Add(listaFinal);
     });
 
-    listaCantidadPersonasPorCanton.Sort((x, y) => y.Values.First().CompareTo(x.Values.First()));
-    for(int i = 0; i < c; i++)
+    listaCantidadPersonasPorDistrito.Sort((x, y) => y.Values.First().CompareTo(x.Values.First()));
+    for (int i = 0; i < c; i++)
     {
-        Console.WriteLine("El canton "+listaCantidadPersonasPorCanton[i].Keys.First() +" tiene "+ listaCantidadPersonasPorCanton[i].Values.First()+" votantes");
+        Console.WriteLine("El distrito " + listaCantidadPersonasPorDistrito[i].Keys.First() + " tiene " + listaCantidadPersonasPorDistrito[i].Values.First() + " votantes");
     }
 
     Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
 
 }
 
-List<string> listaPersonas = ConvertirArchivoALista("C:/Users/josuc/Desktop/padron_completo/PADRON_COMPLETO.txt");
-List<string> listaDatos = ConvertirArchivoALista("C:/Users/josuc/Desktop/padron_completo/Distelec.txt");
+static void puntoN(List<string> listaPersonas, Dictionary<string, string> listaCantones, Dictionary<string, string> listaDistritos)
+{
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+    int degreeOfParallelism = Environment.ProcessorCount;
+    object sync = new object();
+
+    Parallel.For(0, 5, workerId =>
+    {
+        if (workerId == 0)
+        {
+            CantidadDeVotantesPorProvincia(listaPersonas);
+            Console.WriteLine("done!0");
+        }
+
+        if (workerId == 1)
+        {
+            CantidadDeVotantesPorCanton(listaPersonas, listaCantones);
+            Console.WriteLine("done!1");
+        }
+
+        if (workerId == 2)
+        {
+            CantidadDeVotantesPorDistrito(listaPersonas, listaDistritos);
+            Console.WriteLine("done!2");
+        }
+        
+        if (workerId == 3)
+        {
+            NCantonesConMasVotantesRegristrados(listaPersonas, listaCantones, 10);
+            Console.WriteLine("done!3");
+        }
+
+        if (workerId == 4)
+        {
+            NDistritosConMasVotantesRegristrados(listaPersonas, listaDistritos, 10);
+            Console.WriteLine("done!4");
+        }
+
+    });
+    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+
+
+}
+
+List<string> listaPersonas = LeerArchivo("C:\\Users\\josuc\\Documents\\U\\Arquitectura de Computadores\\padron_completo\\PADRON_COMPLETO.txt");
+List<string> listaDatos = LeerArchivo("C:\\Users\\josuc\\Documents\\U\\Arquitectura de Computadores\\padron_completo\\Distelec.txt");
+
 List<string[]> listaDatosOrdenados = organizarPersonas(listaPersonas);
+Dictionary<string, string> listaDistritos = CrearListaDistritos(listaDatos);
+Dictionary<string, string> listaCantones = CrearListaCatones(listaDatos);
+Console.WriteLine("done!");
 //CantidadDeVotantesPorProvincia(listaPersonas);
-//CantidadDeVotantesPorCanton(listaPersonas, CrearListaCatones(listaDatos));
-//CantidadDeVotantesPorDistrito(listaPersonas, CrearListaDistritos(listaDatos));
+//CantidadDeVotantesPorCanton(listaPersonas, listaCantones);
+//CantidadDeVotantesPorDistrito(listaPersonas, listaDistritos);
 //buscarPersona(listaPersonas,listaDatosOrdenados);
 //PersonasPorIdentificacion(listaDatosOrdenados);
-//NCantonesConMasVotantesRegristrados(listaPersonas, CrearListaCatones(listaDatos));
-NDistritosConMasVotantesRegristrados(listaPersonas, CrearListaDistritos(listaDatos));
+//NCantonesConMasVotantesRegristrados(listaPersonas, listaCantones);
+//NDistritosConMasVotantesRegristrados(listaPersonas, listaDistritos);
+puntoN(listaPersonas,listaCantones,listaDistritos);
