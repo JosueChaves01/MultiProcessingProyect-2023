@@ -262,7 +262,7 @@ static List<Dictionary<string, int>> CantidadDeVotantesPorDistrito(List<string> 
     Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
     return listaCantidadPersonasPorDistrito;
 }
-static void cantidadDePersonasConApellidoParticularP(List<string[]> personas)
+static void NApellidosMasCumunes(List<string[]> personas)
 {
     Console.WriteLine("Ingrese la cantidad de datos que desea ver: ");
     int c = Console.Read()-40;
@@ -286,22 +286,19 @@ static void cantidadDePersonasConApellidoParticularP(List<string[]> personas)
     });
     Parallel.ForEach(personas, persona =>
     {
-        lock (Apellidos2)
+        lock (Apellidos)
         {
-            if (!Apellidos2.ContainsKey(persona[7]))
+            if (!Apellidos.ContainsKey(persona[7]))
             {
-                Apellidos2[persona[7]] = 1;
+                Apellidos[persona[7]] = 1;
             }
             else
             {
-                Apellidos2[persona[7]]++;
+                Apellidos[persona[7]]++;
             }
         }
     });
     var sortedApellidos = from pair in Apellidos
-                          orderby pair.Value descending
-                          select pair;
-    var sortedApellidos2 = from pair in Apellidos2
                           orderby pair.Value descending
                           select pair;
     int cont = 0;
@@ -315,19 +312,61 @@ static void cantidadDePersonasConApellidoParticularP(List<string[]> personas)
             break;
         }
     }
-    int cont2 = 0;
-    Console.WriteLine("N segundos apellidos mas comunes");
+    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
 
-    foreach (KeyValuePair<string, int> kp in sortedApellidos2)
+}
+
+static void cantidadDePersonasConApellidoParticularP(List<string[]> personas)
+{
+    Console.WriteLine("Ingrese la cantidad de datos que desea ver: ");
+    string apellido = Console.ReadLine();
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+    Dictionary<string, int> Apellidos = new Dictionary<string, int>();
+    Dictionary<string, int> Apellidos2 = new Dictionary<string, int>();
+    Parallel.ForEach(personas, persona =>
     {
-        cont2++;
-        Console.WriteLine(kp.Key + " " + kp.Value);
-        if (cont2 > c)
+        lock (Apellidos)
         {
-            break;
+            if (!Apellidos.ContainsKey(persona[6]))
+            {
+                Apellidos[persona[6]] = 1;
+            }
+            else
+            {
+                Apellidos[persona[6]]++;
+            }
         }
+    });
+    Parallel.ForEach(personas, persona =>
+    {
+        lock (Apellidos)
+        {
+            if (!Apellidos.ContainsKey(persona[7]))
+            {
+                Apellidos[persona[7]] = 1;
+            }
+            else
+            {
+                Apellidos[persona[7]]++;
+            }
+        }
+    });
+    var sortedApellidos = from pair in Apellidos
+                          orderby pair.Value descending
+                          select pair;
+    int cont = 0;
+    
+    foreach (KeyValuePair<string, int> kp in sortedApellidos)
+    {
+        apellido = apellido.ToUpper();
+        string dato = kp.Key.Substring(0,apellido.Length);
+        if (dato.Equals(apellido))
+        {
+            Console.WriteLine(kp.Key + " " + kp.Value);
+        }
+        
     }
-
     Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
 
 }
@@ -335,7 +374,7 @@ static void cantidadDePersonasConApellidoParticularP(List<string[]> personas)
 
 
 
-static void cantidadDePersonasConApellidoParticular(List<string[]> personas)
+static void NApellidosMasCumunesP(List<string[]> personas)
 {
     Stopwatch temporizador;
     temporizador = Stopwatch.StartNew();
@@ -362,25 +401,22 @@ static void cantidadDePersonasConApellidoParticular(List<string[]> personas)
     {
         if (Apellidos == null)
         {
-            Apellidos2.Add(persona[7],1);
+            Apellidos.Add(persona[7],1);
         }
-        else if (!Apellidos2.ContainsKey(persona[7])) 
+        else if (!Apellidos.ContainsKey(persona[7])) 
         {
             
-            Apellidos2.Add(persona[7], 1);
+            Apellidos.Add(persona[7], 1);
             
         }
-        else if (Apellidos2.ContainsKey(persona[7]))
+        else if (Apellidos.ContainsKey(persona[7]))
         {
-            Apellidos2[persona[7]] = Apellidos2[persona[7]] + 1;
+            Apellidos[persona[7]] = Apellidos[persona[7]] + 1;
         }
     }
     
 
     var sortedApellidos = from pair in Apellidos
-                          orderby pair.Value descending
-                          select pair;
-    var sortedApellidos2 = from pair in Apellidos2
                           orderby pair.Value descending
                           select pair;
 
@@ -394,16 +430,7 @@ static void cantidadDePersonasConApellidoParticular(List<string[]> personas)
             break;
         }
     }
-    int cont2 = 0;
-    foreach(KeyValuePair<string,int> kp in sortedApellidos2)
-    {
-        cont2++;
-        Console.WriteLine(kp.Key + " " + kp.Value);
-        if(cont2 > 9)
-        {
-            break;
-        }
-    }
+    
     Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
 
 }
@@ -767,12 +794,12 @@ static void Menu()
             case 9:
                 break;
             case 10:
-                cantidadDePersonasConApellidoParticular(listaDatosOrdenados);
                 cantidadDePersonasConApellidoParticularP(listaDatosOrdenados);
                 break;
             case 11:
                 break;
             case 12:
+                NApellidosMasCumunes(listaDatosOrdenados);
                 break;
             case 13:
                 break;
