@@ -15,6 +15,7 @@ using System.Collections;
 using System.Runtime.InteropServices;
 using System.Xml;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Collections.Concurrent;
 
 static List<string> LeerArchivo(string ubicacionArchivo)
 {
@@ -88,9 +89,9 @@ static void CantidadDeVotantesPorProvincia(List<string> miLista)
     {
         lock (sync)
         {
-            
 
-            
+
+
             if (workerId == 0)
             {
                 provincia = "SAN JOSE";
@@ -123,7 +124,7 @@ static void CantidadDeVotantesPorProvincia(List<string> miLista)
             {
                 provincia = "Consulado";
             }
-            string indiceProv = (workerId+1).ToString();
+            string indiceProv = (workerId + 1).ToString();
 
             int cont = 0;
             foreach (string linea in miLista)
@@ -160,11 +161,11 @@ static void ConsultarPersonasPorCantonSecuencial(List<string> miLista, Dictionar
     int cont = 0;
     List<Dictionary<string, int>> listaCantidadPersonasPorCanton = new List<Dictionary<string, int>>();
 
-    foreach (KeyValuePair<string,string> datoCanton in miDiccionario)
-    { 
+    foreach (KeyValuePair<string, string> datoCanton in miDiccionario)
+    {
         foreach (string element in miLista)
         {
-            if (element.Substring(10, 3).Equals(datoCanton.Value.Substring(0,3)))
+            if (element.Substring(10, 3).Equals(datoCanton.Value.Substring(0, 3)))
             {
 
                 cont++;
@@ -261,57 +262,153 @@ static List<Dictionary<string, int>> CantidadDeVotantesPorDistrito(List<string> 
     Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
     return listaCantidadPersonasPorDistrito;
 }
-
-static void cantidadDePersonasConApellidoParticular(List<string> miLista, List<string[]> personas)
+static void cantidadDePersonasConApellidoParticularP(List<string[]> personas)
 {
+    Console.WriteLine("Ingrese la cantidad de datos que desea ver: ");
+    int c = Console.Read()-40;
     Stopwatch temporizador;
-    temporizador = Stopwatch.StartNew();
-    List<string> listaApellidos = new List<string>();
-    object sync = new object();
-    Parallel.ForEach(personas, (persona) =>
+    temporizador = Stopwatch.StartNew(); 
+    Dictionary<string, int> Apellidos = new Dictionary<string, int>();
+    Dictionary<string, int> Apellidos2 = new Dictionary<string, int>();
+    Parallel.ForEach(personas, persona =>
     {
-        lock(sync) 
-        { 
-            if (!listaApellidos.Contains(persona[6]))
-            {
-                listaApellidos.Add(persona[6]);
-            }
-            if (!listaApellidos.Contains(persona[7]))
-            {
-                listaApellidos.Add(persona[7]);
-            }
-        }
-        
-    });
-    Console.WriteLine("done!");
-    List<Dictionary<string, int>> listaCantidad = new List<Dictionary<string, int>>();
-    Console.WriteLine(listaApellidos.Count());
-    listaApellidos.Sort();
-    Parallel.ForEach(listaApellidos,  (apellido) =>
-    {
-        int cont1 = 0;
-        Console.WriteLine(apellido);
-        foreach(string[] persona in personas)
+        lock (Apellidos)
         {
-            if (persona[6].Equals(apellido))
+            if (!Apellidos.ContainsKey(persona[6]))
             {
-                cont1++;
-            }             
+                Apellidos[persona[6]] = 1;
+            }
+            else
+            {
+                Apellidos[persona[6]]++;
+            }
         }
-        Dictionary<string, int> listaFinal = new Dictionary<string, int>();
-        listaFinal.Add(apellido, cont1);
-        listaCantidad.Add(listaFinal);
     });
-    Console.WriteLine("DONE!");
-
-
-    foreach(Dictionary<string,int> dato in listaCantidad)
+    Parallel.ForEach(personas, persona =>
     {
-        Console.WriteLine(dato.Keys.First()+" "+dato.Values.First());
+        lock (Apellidos2)
+        {
+            if (!Apellidos2.ContainsKey(persona[7]))
+            {
+                Apellidos2[persona[7]] = 1;
+            }
+            else
+            {
+                Apellidos2[persona[7]]++;
+            }
+        }
+    });
+    var sortedApellidos = from pair in Apellidos
+                          orderby pair.Value descending
+                          select pair;
+    var sortedApellidos2 = from pair in Apellidos2
+                          orderby pair.Value descending
+                          select pair;
+    int cont = 0;
+    Console.WriteLine("N pimeros apellidos mas comunes");
+    foreach (KeyValuePair<string, int> kp in sortedApellidos)
+    {
+        cont++;
+        Console.WriteLine(kp.Key + " " + kp.Value);
+        if (cont > c)
+        {
+            break;
+        }
+    }
+    int cont2 = 0;
+    Console.WriteLine("N segundos apellidos mas comunes");
+
+    foreach (KeyValuePair<string, int> kp in sortedApellidos2)
+    {
+        cont2++;
+        Console.WriteLine(kp.Key + " " + kp.Value);
+        if (cont2 > c)
+        {
+            break;
+        }
     }
 
     Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+
 }
+
+
+
+
+static void cantidadDePersonasConApellidoParticular(List<string[]> personas)
+{
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+    Dictionary<string,int> Apellidos = new Dictionary<string,int>();    
+    Dictionary<string,int> Apellidos2 = new Dictionary<string,int>();    
+    foreach (string[] persona in personas)
+    {
+        if (Apellidos == null)
+        {
+            Apellidos.Add(persona[6],1);
+        }
+        else if (!Apellidos.ContainsKey(persona[6])) 
+        {
+            
+            Apellidos.Add(persona[6], 1);
+            
+        }
+        else if (Apellidos.ContainsKey(persona[6]))
+        {
+            Apellidos[persona[6]] = Apellidos[persona[6]] + 1;
+        }
+    }
+    foreach (string[] persona in personas)
+    {
+        if (Apellidos == null)
+        {
+            Apellidos2.Add(persona[7],1);
+        }
+        else if (!Apellidos2.ContainsKey(persona[7])) 
+        {
+            
+            Apellidos2.Add(persona[7], 1);
+            
+        }
+        else if (Apellidos2.ContainsKey(persona[7]))
+        {
+            Apellidos2[persona[7]] = Apellidos2[persona[7]] + 1;
+        }
+    }
+    
+
+    var sortedApellidos = from pair in Apellidos
+                          orderby pair.Value descending
+                          select pair;
+    var sortedApellidos2 = from pair in Apellidos2
+                          orderby pair.Value descending
+                          select pair;
+
+    int cont = 0;
+    foreach(KeyValuePair<string,int> kp in sortedApellidos)
+    {
+        cont++;
+        Console.WriteLine(kp.Key + " " + kp.Value);
+        if(cont > 9)
+        {
+            break;
+        }
+    }
+    int cont2 = 0;
+    foreach(KeyValuePair<string,int> kp in sortedApellidos2)
+    {
+        cont2++;
+        Console.WriteLine(kp.Key + " " + kp.Value);
+        if(cont2 > 9)
+        {
+            break;
+        }
+    }
+    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+
+}
+
+
 static List<string[]> organizarPersonas(List<string> miLista)
 {
     //      Retorna un pernsona(List<>) que continene listas de strings(string[])
@@ -412,7 +509,7 @@ static void buscarPersona(List<string> miLista, List<string[]> personas)
 
 
 //=============================CANTIDAD DE PERSONAS POR IDENTIFICACION======================
-static void     PersonasPorIdentificacion(List<string[]> personas)
+static void PersonasPorIdentificacion(List<string[]> personas)
 {
     Dictionary<string, int> personasPorIdentificacion = new Dictionary<string, int>()
 {
@@ -540,7 +637,6 @@ static void NDistritosConMasVotantesRegristrados(List<string> listaP, Dictionary
         listaCantidadPersonasPorDistrito.Add(listaFinal);
     });
 
-    
     listaCantidadPersonasPorDistrito.Sort((x, y) => y.Values.First().CompareTo(x.Values.First()));
     for (int i = 0; i < c; i++)
     {
@@ -659,7 +755,7 @@ static void Menu()
                 CantidadDeVotantesPorDistrito(listaPersonas, listaDistritos);
                 break;
             case 5:
-                NCantonesConMasVotantesRegristrados(listaPersonas, listaCantones,0);
+                NCantonesConMasVotantesRegristrados(listaPersonas, listaCantones, 0);
                 break;
             case 6:
                 NDistritosConMasVotantesRegristrados(listaPersonas, listaDistritos, 0);
@@ -671,7 +767,8 @@ static void Menu()
             case 9:
                 break;
             case 10:
-                cantidadDePersonasConApellidoParticular(listaPersonas, listaDatosOrdenados);
+                cantidadDePersonasConApellidoParticular(listaDatosOrdenados);
+                cantidadDePersonasConApellidoParticularP(listaDatosOrdenados);
                 break;
             case 11:
                 break;
