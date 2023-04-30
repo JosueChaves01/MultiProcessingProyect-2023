@@ -154,32 +154,6 @@ static void CantidadDeVotantesPorProvincia(List<string> miLista)
 }
 
 
-static void ConsultarPersonasPorCantonSecuencial(List<string> miLista, Dictionary<string, string> miDiccionario)
-{
-    Stopwatch temporizador;
-    temporizador = Stopwatch.StartNew();
-    int cont = 0;
-    List<Dictionary<string, int>> listaCantidadPersonasPorCanton = new List<Dictionary<string, int>>();
-
-    foreach (KeyValuePair<string, string> datoCanton in miDiccionario)
-    {
-        foreach (string element in miLista)
-        {
-            if (element.Substring(10, 3).Equals(datoCanton.Value.Substring(0, 3)))
-            {
-
-                cont++;
-
-            }
-            Dictionary<string, int> listaFinal = new Dictionary<string, int>();
-            listaFinal.Add(datoCanton.Key, cont);
-            listaCantidadPersonasPorCanton.Add(listaFinal);
-        }
-    }
-    Console.WriteLine("Hay " + cont + " votantes en el canton descrito. (Secuencial)");
-    Console.WriteLine("Tiempo de ejecución(Cantidad de votantes por canton): " + temporizador.ElapsedMilliseconds + " milisegundos");
-}
-
 
 static List<Dictionary<string, int>> CantidadDeVotantesPorCanton(List<string> miLista, Dictionary<string, string> miDiccionario)
 {
@@ -812,6 +786,559 @@ static void Menu()
                 break;
         }
     }
+}
+
+//=================================FUNCIONES DE FORMA SECUENCIAL=================================================
+static void CantidadDeVotantesPorProvinciaSec(List<string> miLista)
+{
+
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+    int degreeOfParallelism = Environment.ProcessorCount;
+    object sync = new object();
+    List<Dictionary<string, int>> listaCantidadPersonasPorProvncia = new List<Dictionary<string, int>>();
+    string provincia = "SAN JOSE";
+    for (int workerId = 0; workerId <= 7; workerId++)
+    {
+
+
+        if (workerId == 0)
+        {
+            provincia = "SAN JOSE";
+        }
+        else if (workerId == 1)
+        {
+            provincia = "ALAJUELA";
+        }
+        else if (workerId == 2)
+        {
+            provincia = "HEREDIA";
+        }
+        else if (workerId == 3)
+        {
+            provincia = "CARTAGO";
+        }
+        else if (workerId == 4)
+        {
+            provincia = "GUANACASTE";
+        }
+        else if (workerId == 5)
+        {
+            provincia = "PUNTARENAS";
+        }
+        else if (workerId == 6)
+        {
+            provincia = "LIMON";
+        }
+        else if (workerId == 7)
+        {
+            provincia = "Consulado";
+        }
+        string indiceProv = (workerId + 1).ToString();
+
+        int cont = 0;
+        foreach (string linea in miLista)
+        {
+            if (linea.Substring(10, 1).Equals(indiceProv))
+            {
+                cont++; ;
+            }
+
+
+        Dictionary<string, int> listaFinal = new Dictionary<string, int>();
+        listaFinal.Add(provincia, cont);
+        listaCantidadPersonasPorProvncia.Add(listaFinal);
+        listaCantidadPersonasPorProvncia.Sort((x, y) => y.Values.First().CompareTo(x.Values.First()));
+        }
+    }
+
+    foreach (Dictionary<string, int> prov in listaCantidadPersonasPorProvncia)
+    {
+        Console.WriteLine("Hay " + prov.Values.First() + " votantes en la provincia " + prov.Keys.First());
+    }
+
+    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+
+
+}
+
+
+static void ConsultarPersonasPorCantonSecuencial(List<string> miLista, Dictionary<string, string> miDiccionario)
+{
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+    int cont = 0;
+    List<Dictionary<string, int>> listaCantidadPersonasPorCanton = new List<Dictionary<string, int>>();
+
+    foreach (KeyValuePair<string, string> datoCanton in miDiccionario)
+    {
+        foreach (string element in miLista)
+        {
+            if (element.Substring(10, 3).Equals(datoCanton.Value.Substring(0, 3)))
+            {
+
+                cont++;
+
+            }
+            Dictionary<string, int> listaFinal = new Dictionary<string, int>();
+            listaFinal.Add(datoCanton.Key, cont);
+            listaCantidadPersonasPorCanton.Add(listaFinal);
+        }
+    }
+    Console.WriteLine("Hay " + cont + " votantes en el canton descrito. (Secuencial)");
+    Console.WriteLine("Tiempo de ejecución(Cantidad de votantes por canton): " + temporizador.ElapsedMilliseconds + " milisegundos");
+}
+
+
+static List<Dictionary<string, int>> CantidadDeVotantesPorCantonSec(List<string> miLista, Dictionary<string, string> miDiccionario)
+{
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+    object sync = new object();
+    List<Dictionary<string, int>> listaCantidadPersonasPorCanton = new List<Dictionary<string, int>>();
+
+    foreach (KeyValuePair<string, string> dato in miDiccionario)
+    {
+        int cont = 0;
+        foreach (string linea in miLista)
+        {
+            string indiceDistrito = dato.Value;
+            if (indiceDistrito.Substring(0, 3).Equals(linea.Substring(10, 3)))
+            {
+                cont++;
+            }
+        }
+
+        Dictionary<string, int> listaFinal = new Dictionary<string, int>();
+        listaFinal.Add(dato.Key, cont);
+        listaCantidadPersonasPorCanton.Add(listaFinal);
+    }
+
+    foreach (Dictionary<string, int> canton in listaCantidadPersonasPorCanton)
+    {
+        Console.WriteLine("El canton " + canton.Keys.First() + " tiene " + canton.Values.First() + " votantes");
+    }
+
+    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+    return listaCantidadPersonasPorCanton;
+}
+static List<Dictionary<string, int>> CantidadDeVotantesPorDistritoSec(List<string> miLista, Dictionary<string, string> miDiccionario)
+{
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+
+    List<Dictionary<string, int>> listaCantidadPersonasPorDistrito = new List<Dictionary<string, int>>();
+
+    foreach (KeyValuePair<string, string> dato in miDiccionario)
+    {
+        int cont = 0;
+        foreach (string linea in miLista)
+        {
+            string indiceDistrito = dato.Value;
+
+            if (indiceDistrito.Substring(0, 6).Equals(linea.Substring(10, 6)))
+            {
+                cont++;
+            }
+        }
+
+        Dictionary<string, int> listaFinal = new Dictionary<string, int>();
+        listaFinal.Add(dato.Key, cont);
+        listaCantidadPersonasPorDistrito.Add(listaFinal);
+    }
+
+    foreach (Dictionary<string, int> distrito in listaCantidadPersonasPorDistrito)
+    {
+        Console.WriteLine("El distrito " + distrito.Keys.First() + " tiene " + distrito.Values.First() + " votantes");
+    }
+
+    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+    return listaCantidadPersonasPorDistrito;
+}
+static void NApellidosMasCumunesSec(List<string[]> personas)
+{
+    Console.WriteLine("Ingrese la cantidad de datos que desea ver: ");
+    int c = Console.Read() - 40;
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+    Dictionary<string, int> Apellidos = new Dictionary<string, int>();
+
+    foreach (string[] persona in personas)
+    {
+        if (!Apellidos.ContainsKey(persona[6]))
+        {
+            Apellidos[persona[6]] = 1;
+        }
+        else
+        {
+            Apellidos[persona[6]]++;
+        }
+
+        if (!Apellidos.ContainsKey(persona[7]))
+        {
+            Apellidos[persona[7]] = 1;
+        }
+        else
+        {
+            Apellidos[persona[7]]++;
+        }
+    }
+
+    var sortedApellidos = from pair in Apellidos
+                          orderby pair.Value descending
+                          select pair;
+    int cont = 0;
+    Console.WriteLine("N pimeros apellidos mas comunes");
+    foreach (KeyValuePair<string, int> kp in sortedApellidos)
+    {
+        cont++;
+        Console.WriteLine(kp.Key + " " + kp.Value);
+        if (cont > c)
+        {
+            break;
+        }
+    }
+    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+}
+
+
+static void cantidadDePersonasConApellidoParticularSec(List<string[]> personas)
+{
+    Console.WriteLine("Ingrese el apellido que desea buscar: ");
+    string apellido = Console.ReadLine();
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+    Dictionary<string, int> Apellidos = new Dictionary<string, int>();
+    Dictionary<string, int> Apellidos2 = new Dictionary<string, int>();
+    foreach (string[] persona in personas)
+    {
+        if (!Apellidos.ContainsKey(persona[6]))
+        {
+            Apellidos[persona[6]] = 1;
+        }
+        else
+        {
+            Apellidos[persona[6]]++;
+        }
+    }
+    foreach (string[] persona in personas)
+    {
+        if (!Apellidos.ContainsKey(persona[7]))
+        {
+            Apellidos[persona[7]] = 1;
+        }
+        else
+        {
+            Apellidos[persona[7]]++;
+        }
+    }
+    var sortedApellidos = from pair in Apellidos
+                          orderby pair.Value descending
+                          select pair;
+    int cont = 0;
+    apellido = apellido.ToUpper();
+    foreach (KeyValuePair<string, int> kp in sortedApellidos)
+    {
+        string dato = kp.Key.Substring(0, apellido.Length);
+        if (dato.Equals(apellido))
+        {
+            Console.WriteLine(kp.Key + " " + kp.Value);
+            cont++;
+            if (cont >= 10)
+            {
+                break;
+            }
+        }
+    }
+    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+}
+
+
+static void NApellidosMasCumunesPSec(List<string[]> personas)
+{
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+    Dictionary<string, int> Apellidos = new Dictionary<string, int>();
+    Dictionary<string, int> Apellidos2 = new Dictionary<string, int>();
+    foreach (string[] persona in personas)
+    {
+        if (Apellidos == null)
+        {
+            Apellidos.Add(persona[6], 1);
+        }
+        else if (!Apellidos.ContainsKey(persona[6]))
+        {
+
+            Apellidos.Add(persona[6], 1);
+
+        }
+        else if (Apellidos.ContainsKey(persona[6]))
+        {
+            Apellidos[persona[6]] = Apellidos[persona[6]] + 1;
+        }
+    }
+    foreach (string[] persona in personas)
+    {
+        if (Apellidos == null)
+        {
+            Apellidos.Add(persona[7], 1);
+        }
+        else if (!Apellidos.ContainsKey(persona[7]))
+        {
+
+            Apellidos.Add(persona[7], 1);
+
+        }
+        else if (Apellidos.ContainsKey(persona[7]))
+        {
+            Apellidos[persona[7]] = Apellidos[persona[7]] + 1;
+        }
+    }
+
+
+    var sortedApellidos = from pair in Apellidos
+                          orderby pair.Value descending
+                          select pair;
+
+    int cont = 0;
+    Console.WriteLine("N pimeros apellidos mas comunes");
+    foreach (KeyValuePair<string, int> kp in sortedApellidos)
+    {
+        cont++;
+        Console.WriteLine(kp.Key + " " + kp.Value);
+        if (cont > 9)
+        {
+            break;
+        }
+    }
+
+    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+}
+
+static void buscarPersonaSec(List<string> miLista, List<string[]> personas)
+{
+    Console.WriteLine("Ingrese el dato que desea buscar:");
+    string datoBuscado = Console.ReadLine().ToUpper();
+    Console.WriteLine("Ingrese el tipo de dato por el que desea buscar, de ingresar un tipo de dato incorrecto se buscara por cedula");
+    Console.WriteLine("- 0 Cedula\n- 1 Codigo Electoral\n- 2 fecha de vencimiento de la cedula(01012030)\n- 3 Nombre\n- 4 Primer Apellido\n- 5 Segundo Apellido");
+    string tipoDatoS = Console.ReadLine();
+    int tipoDato = 5;
+    if (tipoDatoS.Equals('0'))
+    {
+        tipoDato = 0;
+    }
+    else if (tipoDatoS.Equals("1"))
+    {
+        tipoDato = 1;
+    }
+    else if (tipoDatoS.Equals("2"))
+    {
+        tipoDato = 3;
+    }
+    else if (tipoDatoS.Equals("3"))
+    {
+        tipoDato = 5;
+    }
+    else if (tipoDatoS.Equals("4"))
+    {
+        tipoDato = 6;
+    }
+    else if (tipoDatoS.Equals("5"))
+    {
+        tipoDato = 7;
+    }
+    else
+    {
+        tipoDato = 0;
+    }
+
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+
+    for (int i = 0; i < personas.Count; i++)
+    {
+        string datoPersona = personas[i][tipoDato].Substring(0, datoBuscado.Length);
+
+        if (datoPersona.Equals(datoBuscado))
+        {
+            Console.WriteLine(personas[i][0] + " | " + personas[i][1] + " | " + personas[i][3] + " | " + personas[i][5] + " | " + personas[i][6] + " | " + personas[i][7]);
+        }
+    }
+
+    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+}
+
+
+
+//=============================CANTIDAD DE PERSONAS POR IDENTIFICACION======================
+static void PersonasPorIdentificacionSec(List<string[]> personas)
+{
+    Dictionary<string, int> personasPorIdentificacion = new Dictionary<string, int>()
+{
+    { "CEDULA", 0 },
+    { "CODIGO ELECTORAL", 0 },
+    { "FECHA DE VENCIMIENTO", 0 }
+};
+
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+    int degreeOfParallelism = Environment.ProcessorCount;
+    object sync = new object();
+
+    Parallel.For(0, degreeOfParallelism, workerId =>
+    {
+        int lim = personas.Count();
+        var max = lim * (workerId + 1) / degreeOfParallelism;
+        for (int i = (int)lim * workerId / degreeOfParallelism; i < max; i++)
+        {
+            string tipoIdentificacion = personas[i][2].ToUpper();
+
+            lock (sync)
+            {
+                if (personasPorIdentificacion.ContainsKey(tipoIdentificacion))
+                {
+                    personasPorIdentificacion[tipoIdentificacion]++;
+                }
+            }
+        }
+    });
+
+    foreach (KeyValuePair<string, int> kvp in personasPorIdentificacion)
+    {
+        Console.WriteLine("Tipo de identificación: " + kvp.Key + " | Cantidad de personas: " + kvp.Value);
+    }
+
+    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+};
+
+static void NCantonesConMasVotantesRegistradosSec(List<string> listaP, Dictionary<string, string> miDiccionario, int n)
+{
+    int c;
+    if (n == 0)
+    {
+        Console.WriteLine("Ingrese la cantidad de datos que desea ver: ");
+        c = int.Parse(Console.ReadLine());
+    }
+    else
+    {
+        c = n;
+    }
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+
+    List<Dictionary<string, int>> listaCantidadPersonasPorCanton = new List<Dictionary<string, int>>();
+
+    foreach (KeyValuePair<string, string> dato in miDiccionario)
+    {
+        int cont = 0;
+        foreach (string linea in listaP)
+        {
+            string indiceCanton = dato.Value;
+
+            if (indiceCanton.Substring(0, 3).Equals(linea.Substring(10, 3)))
+            {
+                cont++;
+            }
+        }
+
+        Dictionary<string, int> listaFinal = new Dictionary<string, int>();
+        listaFinal.Add(dato.Key, cont);
+        listaCantidadPersonasPorCanton.Add(listaFinal);
+    }
+
+    listaCantidadPersonasPorCanton.Sort((x, y) => y.Values.First().CompareTo(x.Values.First()));
+    for (int i = 0; i < c; i++)
+    {
+        Console.WriteLine("El canton " + listaCantidadPersonasPorCanton[i].Keys.First() + " tiene " + listaCantidadPersonasPorCanton[i].Values.First() + " votantes");
+    }
+
+    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+}
+static void NDistritosConMasVotantesRegristradosSec(List<string> listaP, Dictionary<string, string> miDiccionario, int n)
+{
+    int c;
+    if (n == 0)
+    {
+        Console.WriteLine("Ingrese la cantidad de datos que desea ver: ");
+        c = int.Parse(Console.ReadLine());
+    }
+    else
+    {
+        c = n;
+    }
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+
+    List<Dictionary<string, int>> listaCantidadPersonasPorDistrito = new List<Dictionary<string, int>>();
+
+    foreach (KeyValuePair<string, string> dato in miDiccionario)
+    {
+        int cont = 0;
+        foreach (string linea in listaP)
+        {
+            string indiceDistrito = dato.Value;
+
+            if (indiceDistrito.Substring(0, 6).Equals(linea.Substring(10, 6)))
+            {
+                cont++;
+            }
+        }
+
+        Dictionary<string, int> listaFinal = new Dictionary<string, int>();
+        listaFinal.Add(dato.Key, cont);
+        listaCantidadPersonasPorDistrito.Add(listaFinal);
+    }
+
+    listaCantidadPersonasPorDistrito.Sort((x, y) => y.Values.First().CompareTo(x.Values.First()));
+    for (int i = 0; i < c; i++)
+    {
+        Console.WriteLine("El distrito " + listaCantidadPersonasPorDistrito[i].Keys.First() + " tiene " + listaCantidadPersonasPorDistrito[i].Values.First() + " votantes");
+    }
+
+    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+}
+static void puntoNSec(List<string> listaPersonas, Dictionary<string, string> listaCantones, Dictionary<string, string> listaDistritos)
+{
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+    object sync = new object();
+
+    for(int workerId = 0; workerId < 5; workerId++)
+    {
+        if (workerId == 0)
+        {
+            CantidadDeVotantesPorProvinciaSec(listaPersonas);
+            Console.WriteLine("done!0");
+        }
+
+        if (workerId == 1)
+        {
+            CantidadDeVotantesPorCantonSec(listaPersonas, listaCantones);
+            Console.WriteLine("done!1");
+        }
+
+        if (workerId == 2)
+        {
+            CantidadDeVotantesPorDistritoSec(listaPersonas, listaDistritos);
+            Console.WriteLine("done!2");
+        }
+
+        if (workerId == 3)
+        {
+            NCantonesConMasVotantesRegistradosSec(listaPersonas, listaCantones, 10);
+            Console.WriteLine("done!3");
+        }
+
+        if (workerId == 4)
+        {
+            NDistritosConMasVotantesRegristradosSec(listaPersonas, listaDistritos, 10);
+            Console.WriteLine("done!4");
+        }
+
+    }
+    Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
+
+
 }
 
 Menu();

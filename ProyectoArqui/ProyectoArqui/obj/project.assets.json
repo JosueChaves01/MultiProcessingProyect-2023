@@ -8,23 +8,23 @@
     "net7.0": []
   },
   "packageFolders": {
-    "C:\\Users\\josuc\\.nuget\\packages\\": {},
+    "C:\\Users\\PERSONAL\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\josuc\\Desktop\\MultiProcessingProyect-2023\\ProyectoArqui\\ProyectoArqui\\ProyectoArqui.csproj",
+      "projectUniqueName": "C:\\Users\\PERSONAL\\OneDrive\\Documentos\\Cursos 2023\\l semestre 2023\\Arquitectura de computadores\\Proyecto multicore\\MultiProcessingProyect-2023\\ProyectoArqui\\ProyectoArqui\\ProyectoArqui.csproj",
       "projectName": "ProyectoArqui",
-      "projectPath": "C:\\Users\\josuc\\Desktop\\MultiProcessingProyect-2023\\ProyectoArqui\\ProyectoArqui\\ProyectoArqui.csproj",
-      "packagesPath": "C:\\Users\\josuc\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\josuc\\Desktop\\MultiProcessingProyect-2023\\ProyectoArqui\\ProyectoArqui\\obj\\",
+      "projectPath": "C:\\Users\\PERSONAL\\OneDrive\\Documentos\\Cursos 2023\\l semestre 2023\\Arquitectura de computadores\\Proyecto multicore\\MultiProcessingProyect-2023\\ProyectoArqui\\ProyectoArqui\\ProyectoArqui.csproj",
+      "packagesPath": "C:\\Users\\PERSONAL\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\PERSONAL\\OneDrive\\Documentos\\Cursos 2023\\l semestre 2023\\Arquitectura de computadores\\Proyecto multicore\\MultiProcessingProyect-2023\\ProyectoArqui\\ProyectoArqui\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\josuc\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\PERSONAL\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
