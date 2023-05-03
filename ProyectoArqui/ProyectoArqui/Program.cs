@@ -755,7 +755,7 @@ static void Menu()
                 NDistritosConMasVotantesRegristrados(listaPersonas, listaDistritos, 0);
                 break;
             case 7:
-                PersonasPorIdentificacion(listaDatosOrdenados);
+                PersonasPorIdentificacionSec(listaDatosOrdenados);
                 break;
             case 8:
                 break;
@@ -1167,43 +1167,36 @@ static void buscarPersonaSec(List<string> miLista, List<string[]> personas)
 //=============================CANTIDAD DE PERSONAS POR IDENTIFICACION======================
 static void PersonasPorIdentificacionSec(List<string[]> personas)
 {
-    Dictionary<string, int> personasPorIdentificacion = new Dictionary<string, int>()
-{
-    { "CEDULA", 0 },
-    { "CODIGO ELECTORAL", 0 },
-    { "FECHA DE VENCIMIENTO", 0 }
-};
-
+    int provincia = 0;
+    int extranjero = 0;
+    int nacimiento = 0;
     Stopwatch temporizador;
     temporizador = Stopwatch.StartNew();
-    int degreeOfParallelism = Environment.ProcessorCount;
-    object sync = new object();
 
-    Parallel.For(0, degreeOfParallelism, workerId =>
+    foreach (string[] persona in personas)
     {
-        int lim = personas.Count();
-        var max = lim * (workerId + 1) / degreeOfParallelism;
-        for (int i = (int)lim * workerId / degreeOfParallelism; i < max; i++)
+        if (persona[0].Substring(0, 1).Equals("1") || persona[0].Substring(0, 1).Equals("2") || persona[0].Substring(0, 1).Equals("3") || persona[0].Substring(0, 1).Equals("4") || persona[0].Substring(0, 1).Equals("5") || persona[0].Substring(0, 1).Equals("6") || persona[0].Substring(0, 1).Equals("7"))
         {
-            string tipoIdentificacion = personas[i][2].ToUpper();
-            Console.WriteLine(tipoIdentificacion);
-            lock (sync)
-            {
-                if (personasPorIdentificacion.ContainsKey(tipoIdentificacion))
-                {
-                    personasPorIdentificacion[tipoIdentificacion]++;
-                }
-            }
+            provincia++;
         }
-    });
 
-    foreach (KeyValuePair<string, int> kvp in personasPorIdentificacion)
-    {
-        Console.WriteLine("Tipo de identificación: " + kvp.Key + " | Cantidad de personas: " + kvp.Value);
+        else if (persona[0].Substring(0, 1).Equals("8"))
+        {
+            extranjero++;
+        }
+
+        else if (persona[0].Substring(0, 1).Equals("9"))
+        {
+            nacimiento++;
+        }
     }
 
+    Console.WriteLine("Personas con tipo de identificacion asociadas a una provincia: " + provincia);
+    Console.WriteLine("Personas con tipo de identificacion de extranjero nacionalizado: " + extranjero);
+    Console.WriteLine("Personas con tipo de identificacion sin lugar de nacimiento reportado: " + nacimiento);
     Console.WriteLine("Tiempo de ejecución: " + temporizador.ElapsedMilliseconds + " milisegundos");
-};
+}
+
 
 static void NCantonesConMasVotantesRegistradosSec(List<string> listaP, Dictionary<string, string> miDiccionario, int n)
 {
