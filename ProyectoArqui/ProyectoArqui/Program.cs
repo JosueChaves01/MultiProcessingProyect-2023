@@ -124,10 +124,11 @@ static void CantidadDeVotantesPorProvincia(List<string> miLista)
             Dictionary<string, int> listaFinal = new Dictionary<string, int>();
             listaFinal.Add(provincia, cont);
             listaCantidadPersonasPorProvncia.Add(listaFinal);
-            listaCantidadPersonasPorProvncia.Sort((x, y) => y.Values.First().CompareTo(x.Values.First()));
+            
         }
     });
 
+    listaCantidadPersonasPorProvncia.Sort((x, y) => y.Values.First().CompareTo(x.Values.First()));
     foreach (Dictionary<string, int> prov in listaCantidadPersonasPorProvncia)
     {
         Console.WriteLine("Hay " + prov.Values.First() + " votantes en la provincia " + prov.Keys.First());
@@ -172,7 +173,7 @@ static List<Dictionary<string, int>> CantidadDeVotantesPorCanton(List<string> mi
         listaCantidadPersonasPorCanton.Add(listaFinal);
     });
 
-
+    listaCantidadPersonasPorCanton.Sort((x, y) => y.Values.First().CompareTo(x.Values.First()));
     foreach (Dictionary<string, int> canton in listaCantidadPersonasPorCanton)
     {
         Console.WriteLine("El canton " + canton.Keys.First() + " tiene " + canton.Values.First() + " votantes");
@@ -212,7 +213,7 @@ static List<Dictionary<string, int>> CantidadDeVotantesPorDistrito(List<string> 
         listaCantidadPersonasPorDistrito.Add(listaFinal);
     });
 
-
+    listaCantidadPersonasPorDistrito.Sort((x, y) => y.Values.First().CompareTo(x.Values.First()));
     foreach (Dictionary<string, int> canton in listaCantidadPersonasPorDistrito)
     {
         Console.WriteLine("El distrito " + canton.Keys.First() + " tiene " + canton.Values.First() + " votantes");
