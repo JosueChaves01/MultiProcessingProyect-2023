@@ -521,17 +521,17 @@ static void PersonasPorIdentificacion(List<string[]> personas)
 
     Parallel.ForEach(personas, persona =>
     {
-        if (persona[0][0].Equals("1") || persona[0][0].Equals("2") || persona[0][0].Equals("3") || persona[0][0].Equals("4") || persona[0][0].Equals("5") || persona[0][0].Equals("6") || persona[0][0].Equals("7"))
+        if (persona[0].Substring(0,1).Equals("1") || persona[0].Substring(0, 1).Equals("2") || persona[0].Substring(0, 1).Equals("3") || persona[0].Substring(0, 1).Equals("4") || persona[0].Substring(0, 1).Equals("5") || persona[0].Substring(0, 1).Equals("6") || persona[0].Substring(0, 1).Equals("7"))
         {
             provincia++;
         }
 
-        else if (persona[0][0].Equals("8"))
+        else if (persona[0].Substring(0, 1).Equals("8"))
         {
             extranjero++;
         }
 
-        else if (persona[0][0].Equals("9"))
+        else if (persona[0].Substring(0, 1).Equals("9"))
         {
             nacimiento++;
         }
@@ -755,6 +755,7 @@ static void Menu()
                 NDistritosConMasVotantesRegristrados(listaPersonas, listaDistritos, 0);
                 break;
             case 7:
+                PersonasPorIdentificacion(listaDatosOrdenados);
                 break;
             case 8:
                 break;
@@ -1185,7 +1186,7 @@ static void PersonasPorIdentificacionSec(List<string[]> personas)
         for (int i = (int)lim * workerId / degreeOfParallelism; i < max; i++)
         {
             string tipoIdentificacion = personas[i][2].ToUpper();
-
+            Console.WriteLine(tipoIdentificacion);
             lock (sync)
             {
                 if (personasPorIdentificacion.ContainsKey(tipoIdentificacion))
@@ -1335,10 +1336,3 @@ static void puntoNSec(List<string> listaPersonas, Dictionary<string, string> lis
 }
 
 Menu();
-//
-//CantidadDeVotantesPorCanton(listaPersonas, listaCantones);
-//CantidadDeVotantesPorDistrito(listaPersonas, listaDistritos);
-
-//PersonasPorIdentificacion(listaDatosOrdenados);
-//
-//
