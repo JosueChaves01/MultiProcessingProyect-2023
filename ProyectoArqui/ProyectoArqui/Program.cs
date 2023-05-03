@@ -630,10 +630,19 @@ static void NDistritosConMasVotantesRegristrados(List<string> listaP, Dictionary
 
 }
 
-static void personasCuyaIdentificacionVenceEnX(List<string[]> personas)
+static void personasCuyaIdentificacionVenceEnX(List<string[]> personas, int x)
 {
-    Console.WriteLine("ingrese la fecha de vencimiento en el formato 'aaaammdd' ( a = anio , m = mes , d = dia )");
-    string fechaVencimiento = Console.ReadLine();
+    string fechaVencimiento;
+    if (x == 0)
+    {
+        Console.WriteLine("ingrese la fecha de vencimiento en el formato 'aaaammdd' ( a = anio , m = mes , d = dia )");
+         fechaVencimiento = Console.ReadLine();
+    }
+
+    else
+    {
+        fechaVencimiento = DateTime.Now.ToString("yyyyMMdd");
+    }
     Stopwatch temporizador;
     temporizador = Stopwatch.StartNew();
     object sync = new object();
@@ -666,7 +675,7 @@ static void puntoN(List<string> listaPersonas, Dictionary<string, string> listaC
     int degreeOfParallelism = Environment.ProcessorCount;
     object sync = new object();
 
-    Parallel.For(0, 11, workerId =>
+    Parallel.For(0, 7, workerId =>
     {
         if (workerId == 0)
         {
@@ -695,33 +704,15 @@ static void puntoN(List<string> listaPersonas, Dictionary<string, string> listaC
 
         if (workerId == 5)
         {
-            personasCuyaIdentificacionVenceEnXSec(listaDatosOrdenados,1);
+            personasCuyaIdentificacionVenceEnX(listaDatosOrdenados,1);
         }
 
         if (workerId == 6)
         {
-            NDistritosConMasVotantesRegristrados(listaPersonas, listaDistritos, 10);
-        }
-
-        if (workerId == 7)
-        {
-
-        }
-
-        if (workerId == 8)
-        {
             NApellidosMasCumunesP(listaDatosOrdenados, 10);
         }
 
-        if (workerId == 9)
-        {
-            NDistritosConMasVotantesRegristrados(listaPersonas, listaDistritos, 10);
-        }
-
-        if (workerId == 10)
-        {
-            NDistritosConMasVotantesRegristrados(listaPersonas, listaDistritos, 10);
-        }
+      
 
     });
     Console.WriteLine("Tiempo de ejecución(PUNTO N): " + temporizador.ElapsedMilliseconds + " milisegundos");
