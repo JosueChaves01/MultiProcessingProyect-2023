@@ -498,6 +498,347 @@ static void buscarPersona(List<string> miLista, List<string[]> personas)
     Console.WriteLine("Tiempo de ejecución(BUSCAR PERSONA PARARELO): " + temporizador.ElapsedMilliseconds + " milisegundos");
 }
 
+static void NNombreMasComunesSec(List<string[]> lineas, int n)
+{
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+    
+    Dictionary<string, int> primerosNombres = new Dictionary<string, int>();
+    Dictionary<string, int> segundosNombres = new Dictionary<string, int>();
+
+    foreach (string[] linea in lineas)
+    {
+        string[] partesNombre = linea[5].Split(' ');
+
+        if (partesNombre.Length > 0)
+        {
+            string primerNombre = partesNombre[0].Trim();
+
+            if (!string.IsNullOrEmpty(primerNombre))
+            {
+                if (!primerosNombres.ContainsKey(primerNombre))
+                {
+                    primerosNombres.Add(primerNombre, 1);
+                }
+                else
+                {
+                    primerosNombres[primerNombre]++;
+                }
+            }
+        }
+
+        if (partesNombre.Length > 1)
+        {
+            string segundoNombre = partesNombre[1].Trim();
+
+            if (!string.IsNullOrEmpty(segundoNombre))
+            {
+                if (!segundosNombres.ContainsKey(segundoNombre))
+                {
+                    segundosNombres.Add(segundoNombre, 1);
+                }
+                else
+                {
+                    segundosNombres[segundoNombre]++;
+                }
+            }
+        }
+    }
+
+    Console.WriteLine($"Los {n} primeros nombres más comunes son:");
+    var sortedPrimerosNombres = from pair in primerosNombres
+                                orderby pair.Value descending
+                                select pair;
+    segundosNombres.Remove("DEL");
+    segundosNombres.Remove("DE");
+    int cont = 0;
+    foreach (KeyValuePair<string, int> nombre in sortedPrimerosNombres)
+    {
+        cont++;
+
+        Console.WriteLine($"{nombre.Key}: {nombre.Value}");
+
+        if (cont >= n)
+        {
+            break;
+        }
+    }
+
+    Console.WriteLine();
+
+    Console.WriteLine($"Los {n} segundos nombres más comunes son:");
+    var sortedSegundosNombres = from pair in segundosNombres
+                                orderby pair.Value descending
+                                select pair;
+
+    cont = 0;
+    foreach (KeyValuePair<string, int> nombre in sortedSegundosNombres)
+    {
+        cont++;
+
+        Console.WriteLine($"{nombre.Key}: {nombre.Value}");
+
+        if (cont >= n)
+        {
+            break;
+        }
+    }
+    
+
+    Console.WriteLine("Tiempo de ejecución(CANTIDAD DE PERSONAS CON UN NOMBRE EN PARTICULAR SECUANCIAL): " + temporizador.ElapsedMilliseconds + " milisegundos");
+}
+static void NNombreMasComunes(List<string[]> lineas, int n)
+{
+    if(n == 0)
+    {
+        Console.WriteLine("Ingrese la cantidad de datos que desea ver: ");
+        n = Console.Read() - 39;
+    }
+
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+
+    Dictionary<string, int> primerosNombres = new Dictionary<string, int>();
+    Dictionary<string, int> segundosNombres = new Dictionary<string, int>();
+
+    object sync = new object();
+
+    Parallel.ForEach(lineas, linea =>
+    {
+        lock (sync)
+        {
+            string[] partesNombre = linea[5].Split(' ');
+
+            if (partesNombre.Length > 0)
+            {
+                string primerNombre = partesNombre[0].Trim();
+
+                if (!string.IsNullOrEmpty(primerNombre))
+                {
+                    if (!primerosNombres.ContainsKey(primerNombre))
+                    {
+                        primerosNombres.Add(primerNombre, 1);
+                    }
+                    else
+                    {
+                        primerosNombres[primerNombre]++;
+                    }
+                }
+            }
+
+            if (partesNombre.Length > 1)
+            {
+                string segundoNombre = partesNombre[1].Trim();
+
+                if (!string.IsNullOrEmpty(segundoNombre))
+                {
+                    if (!segundosNombres.ContainsKey(segundoNombre))
+                    {
+                        segundosNombres.Add(segundoNombre, 1);
+                    }
+                    else
+                    {
+                        segundosNombres[segundoNombre]++;
+                    }
+                }
+            }
+        }
+    });
+
+    Console.WriteLine($"Los {n} primeros nombres más comunes son:");
+    var sortedPrimerosNombres = from pair in primerosNombres
+                                orderby pair.Value descending
+                                select pair;
+    segundosNombres.Remove("DEL");
+    segundosNombres.Remove("DE");
+    int cont = 0;
+    foreach (KeyValuePair<string, int> nombre in sortedPrimerosNombres)
+    {
+        cont++;
+
+        Console.WriteLine($"{nombre.Key}: {nombre.Value}");
+
+        if (cont >= n)
+        {
+            break;
+        }
+    }
+
+    Console.WriteLine();
+
+    Console.WriteLine($"Los {n} segundos nombres más comunes son:");
+    var sortedSegundosNombres = from pair in segundosNombres
+                                orderby pair.Value descending
+                                select pair;
+
+    cont = 0;
+    foreach (KeyValuePair<string, int> nombre in sortedSegundosNombres)
+    {
+        cont++;
+
+        Console.WriteLine($"{nombre.Key}: {nombre.Value}");
+
+        if (cont >= n)
+        {
+            break;
+        }
+    }
+
+
+    Console.WriteLine("Tiempo de ejecución(CANTIDAD DE PERSONAS CON UN NOMBRE EN PARTICULAR PARALELO): " + temporizador.ElapsedMilliseconds + " milisegundos");
+}static void NNombreMenosComunes(List<string[]> lineas, int n)
+{
+    if(n == 0)
+    {
+        Console.WriteLine("Ingrese la cantidad de datos que desea ver: ");
+        n = Console.Read() - 39;
+    }
+
+    Stopwatch temporizador;
+    temporizador = Stopwatch.StartNew();
+
+    Dictionary<string, int> primerosNombres = new Dictionary<string, int>();
+    Dictionary<string, int> segundosNombres = new Dictionary<string, int>();
+
+    object sync = new object();
+
+    Parallel.ForEach(lineas, linea =>
+    {
+        lock (sync)
+        {
+            string[] partesNombre = linea[5].Split(' ');
+
+            if (partesNombre.Length > 0)
+            {
+                string primerNombre = partesNombre[0].Trim();
+
+                if (!string.IsNullOrEmpty(primerNombre))
+                {
+                    if (!primerosNombres.ContainsKey(primerNombre))
+                    {
+                        primerosNombres.Add(primerNombre, 1);
+                    }
+                    else
+                    {
+                        primerosNombres[primerNombre]++;
+                    }
+                }
+            }
+
+            if (partesNombre.Length > 1)
+            {
+                string segundoNombre = partesNombre[1].Trim();
+
+                if (!string.IsNullOrEmpty(segundoNombre))
+                {
+                    if (!segundosNombres.ContainsKey(segundoNombre))
+                    {
+                        segundosNombres.Add(segundoNombre, 1);
+                    }
+                    else
+                    {
+                        segundosNombres[segundoNombre]++;
+                    }
+                }
+            }
+        }
+    });
+
+    Console.WriteLine($"Los {n} primeros nombres más comunes son:");
+    var sortedPrimerosNombres = from pair in primerosNombres
+                                orderby pair.Value ascending
+                                select pair;
+    segundosNombres.Remove("DEL");
+    segundosNombres.Remove("DE");
+    int cont = 0;
+    foreach (KeyValuePair<string, int> nombre in sortedPrimerosNombres)
+    {
+        cont++;
+
+        Console.WriteLine($"{nombre.Key}: {nombre.Value}");
+
+        if (cont >= n)
+        {
+            break;
+        }
+    }
+
+    Console.WriteLine();
+
+    Console.WriteLine($"Los {n} segundos nombres más comunes son:");
+    var sortedSegundosNombres = from pair in segundosNombres
+                                orderby pair.Value ascending
+                                select pair;
+
+    cont = 0;
+    foreach (KeyValuePair<string, int> nombre in sortedSegundosNombres)
+    {
+        cont++;
+
+        Console.WriteLine($"{nombre.Key}: {nombre.Value}");
+
+        if (cont >= n)
+        {
+            break;
+        }
+    }
+
+
+    Console.WriteLine("Tiempo de ejecución(CANTIDAD DE PERSONAS CON UN NOMBRE EN PARTICULAR PARALELO): " + temporizador.ElapsedMilliseconds + " milisegundos");
+}
+
+static void CantidadDePersonasConUnNombreParticular(List<string[]> lineas)
+{
+    Dictionary<string, int> nombres = new Dictionary<string, int>();
+
+    foreach (string[] linea in lineas)
+    {
+        string nombre = linea[5].Trim();
+
+        if (!string.IsNullOrEmpty(nombre))
+        {
+            string[] partesNombre = nombre.Split(' ');
+
+            if (partesNombre.Length >= 1)
+            {
+                string primerNombre = partesNombre[0];
+
+                if (!nombres.ContainsKey(primerNombre))
+                {
+                    nombres.Add(primerNombre, 1);
+                }
+                else
+                {
+                    nombres[primerNombre]++;
+                }
+            }
+
+            if (partesNombre.Length >= 2)
+            {
+                string segundoNombre = partesNombre[1];
+
+                if (!nombres.ContainsKey(segundoNombre))
+                {
+                    nombres.Add(segundoNombre, 1);
+                }
+                else
+                {
+                    nombres[segundoNombre]++;
+                }
+            }
+        }
+    }
+    var sortedNombre = from pair in nombres
+                       orderby pair.Value ascending
+                       select pair;
+
+    foreach (KeyValuePair<string, int> nombre in sortedNombre)
+    {
+        
+        Console.WriteLine($"{nombre.Key}: {nombre.Value}");
+        
+    }
+}
 
 
 //=============================CANTIDAD DE PERSONAS POR IDENTIFICACION======================
@@ -676,7 +1017,7 @@ static void puntoN(List<string> listaPersonas, Dictionary<string, string> listaC
     int degreeOfParallelism = Environment.ProcessorCount;
     object sync = new object();
 
-    Parallel.For(0, 7, workerId =>
+    Parallel.For(0, 9, workerId =>
     {
         if (workerId == 0)
         {
@@ -712,8 +1053,23 @@ static void puntoN(List<string> listaPersonas, Dictionary<string, string> listaC
         {
             NApellidosMasCumunesP(listaDatosOrdenados, 10);
         }
+        
+        if (workerId == 7)
+        {
+            NNombreMasComunes(listaDatosOrdenados, 10);
+        }
 
-      
+        if(workerId == 8)
+        {
+            NNombreMenosComunes(listaDatosOrdenados, 10);
+        }
+        
+        if(workerId == 8)
+        {
+            PersonasPorIdentificacion(listaDatosOrdenados);
+        }
+
+
 
     });
     Console.WriteLine("Tiempo de ejecución(PUNTO N): " + temporizador.ElapsedMilliseconds + " milisegundos");
@@ -792,19 +1148,22 @@ static void Menu()
                 PersonasPorIdentificacion(listaDatosOrdenados);
                 break;
             case 8:
-                personasCuyaIdentificacionVenceEnXSec(listaDatosOrdenados,1);
+                personasCuyaIdentificacionVenceEnX(listaDatosOrdenados, 0);
                 break;
             case 9:
+                CantidadDePersonasConUnNombreParticular(listaDatosOrdenados);
                 break;
             case 10:
                 cantidadDePersonasConApellidoParticularP(listaDatosOrdenados);
                 break;
             case 11:
+                NNombreMasComunes(listaDatosOrdenados,0);
                 break;
             case 12:
                 NApellidosMasCumunes(listaDatosOrdenados);
                 break;
             case 13:
+                NNombreMenosComunes(listaDatosOrdenados, 0);
                 break;
             case 14:
                 puntoN(listaPersonas, listaCantones, listaDistritos, listaDatosOrdenados);
